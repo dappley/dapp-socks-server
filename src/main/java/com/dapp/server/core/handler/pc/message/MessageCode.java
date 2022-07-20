@@ -15,7 +15,8 @@ public enum MessageCode {
     HEARTBEAT(1),
     CONNECT(2),
     PROXY_DATA(3),
-    DISCONNECT(4);
+    DISCONNECT(4),
+    UDP_ASSOCIATE(5);
 
     private int value;
 

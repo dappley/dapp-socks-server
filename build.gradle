@@ -1,8 +1,8 @@
 buildscript {
     repositories {
         mavenLocal()
-        maven { url "https://repo.spring.io/snapshot" }
-        maven { url "https://repo.spring.io/milestone" }
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
         jcenter()
     }
     dependencies {
@@ -10,8 +10,15 @@ buildscript {
     }
 }
 
-repositories {
-    mavenCentral()
+allprojects {
+    repositories {
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        jcenter()
+        mavenCentral()
+    }
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
 }
 
 apply plugin: 'application'
@@ -19,17 +26,25 @@ apply plugin: 'com.github.johnrengelman.shadow'
 mainClassName = 'com.dapp.server.Application'
 
 dependencies {
-    implementation('org.yaml:snakeyaml:1.24')
-    implementation('ch.qos.logback:logback-classic:1.2.3')
-    implementation('org.projectlombok:lombok:1.18.8')
+    compile('org.yaml:snakeyaml:1.24')
+    compile('ch.qos.logback:logback-classic:1.2.3')
+    compile('com.google.protobuf:protobuf-java:3.19.4')
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
     implementation('io.netty:netty-all:4.1.42.Final')
     implementation('com.google.code.gson:gson:2.8.5')
-    annotationProcessor('org.projectlombok:lombok:1.18.8')
-    implementation("org.projectlombok:lombok:1.18.8")
+
 }
 
 jar {
     manifest {
         attributes 'Main-Class': 'com.dapp.server.Application'
+    }
+
+    from (configurations.compile.collect { entry -> zipTree(entry) }) {
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/*.SF'
+        exclude 'META-INF/*.DSA'
+        exclude 'META-INF/*.RSA'
     }
 }
